@@ -90,6 +90,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* Toast */
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#37352f;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:all .3s;z-index:300;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Modal */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:400;align-items:flex-end;justify-content:center}
+.ov.open{display:flex}
+.modal{background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)}
+.m-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid var(--border);position:sticky;top:0;background:#fff;z-index:1}
+.m-title{font-size:15px;font-weight:700;color:var(--text)}
+.m-close{background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;padding:0 4px;line-height:1}
+.m-section{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:12px 18px 4px}
+.t-row{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid var(--border);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .1s}
+.t-row:active{background:#f7f6f3}
+.t-row.on{background:var(--green-light)}
+.t-cb{width:22px;height:22px;border:2px solid var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.t-row.on .t-cb{background:var(--green);border-color:var(--green)}
+.t-ck{display:none;color:#fff;font-size:13px;font-weight:700}
+.t-row.on .t-ck{display:block}
+.t-lbl{font-size:14px;color:var(--text)}
+.t-row.on .t-lbl{color:var(--green-dark)}
+.m-footer{padding:14px 18px}
+.m-save{background:var(--green);color:#fff;border:none;border-radius:25px;padding:12px 40px;font-size:15px;font-weight:600;cursor:pointer;width:100%}
+.m-save:active{background:var(--green-dark)}
 </style>
 </head>
 <body>
@@ -144,6 +165,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- Modal -->
+<div class="ov" id="ov">
+  <div class="modal">
+    <div class="m-hdr">
+      <div class="m-title" id="m-title">Өдрийн даалгавар</div>
+      <button class="m-close" onclick="closeModal()">×</button>
+    </div>
+    <div id="m-body"></div>
+    <div class="m-footer"><button class="m-save" onclick="closeModal()">✓ Хадгалах</button></div>
+  </div>
+</div>
 
 <script>
 const TODAY_OBJ = new Date();
@@ -324,6 +357,7 @@ function renderCalendar(){
       else if(st==='done')cls+=' done';
       else if(st==='partial')cls+=' partial';
       cell.className=cls;cell.textContent=d;
+      if(!(m===2&&d<15)){(function(kk){cell.onclick=function(){openModal(kk);};})(k);}
       grid.appendChild(cell);
     }
     block.appendChild(grid);wrap.appendChild(block);
@@ -372,7 +406,44 @@ function resetToday(){
   if(!confirm('Өнөөдрийн бүх чагтыг арилгах уу?'))return;
   const key=todayKey();
   delete data[key];save();renderDaily();
+document.getElementById('ov').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
   showToast('Шинэчлэгдлээ');
+}
+
+
+function openModal(k){
+  const[y,m,d]=k.split('-').map(Number);
+  const mn=['1-р','2-р','3-р','4-р','5-р','6-р','7-р','8-р','9-р','10-р','11-р','12-р'];
+  document.getElementById('m-title').textContent=mn[m-1]+' сарын '+d+' — Даалгавар';
+  if(!data[k])data[k]={};
+  const body=document.getElementById('m-body');
+  body.innerHTML='';
+  const SECTIONS=[{lbl:'🌅 Өглөө',tasks:MORNING},{lbl:'☀️ Өдөр',tasks:DAY},{lbl:'🌙 Орой',tasks:EVENING}];
+  SECTIONS.forEach(sec=>{
+    const sh=document.createElement('div');sh.className='m-section';sh.textContent=sec.lbl;body.appendChild(sh);
+    sec.tasks.forEach(task=>{
+      const row=document.createElement('div');
+      const checked=!!(data[k][task.id]);
+      row.className='t-row'+(checked?' on':'');
+      row.innerHTML='<div class="t-cb"><span class="t-ck">✓</span></div><div class="t-lbl">'+task.icon+' '+task.text+'</div>';
+      row.onclick=function(){
+        const now=!!(data[k][task.id]);
+        data[k][task.id]=!now;
+        save();
+        row.classList.toggle('on',!now);
+        renderCalendar();
+        updateCalStats();
+        if(!now)showToast(task.text+' ✓');
+      };
+      body.appendChild(row);
+    });
+  });
+  document.getElementById('ov').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('ov').classList.remove('open');
 }
 
 function showToast(msg){
@@ -387,6 +458,8 @@ const now=new Date();
 document.getElementById('hdr-date').textContent=`${now.getFullYear()} · ${months[now.getMonth()]} сарын ${now.getDate()} · ${days[now.getDay()]}`;
 
 renderDaily();
+document.getElementById('ov').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
 </script>
 </body>
 </html>
