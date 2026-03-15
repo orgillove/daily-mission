@@ -2,464 +2,527 @@
 <html lang="mn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#0f7b6c">
-<title>Daily Mission</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 Life Plan & Daily Tracker</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--green:#0f7b6c;--green-light:#e9f4f2;--green-dark:#0a5c51;--amber:#d9730d;--amber-light:#fdf3e7;--red:#c0392b;--bg:#f7f6f3;--card:#fff;--border:#e3e2de;--text:#37352f;--muted:#9b9a97}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:100px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f7f6f3;color:#37352f;min-height:100vh;font-size:15px;line-height:1.6}
+a{color:inherit;text-decoration:none}
 
-/* Header */
-.header{background:var(--green);color:#fff;padding:16px 20px 12px;position:sticky;top:0;z-index:100}
-.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.header-date{font-size:13px;opacity:.85}
-.header-title{font-size:18px;font-weight:700}
-.reset-btn{background:rgba(255,255,255,.2);border:none;color:#fff;font-size:12px;padding:5px 12px;border-radius:20px;cursor:pointer}
-.progress-bar-bg{height:6px;background:rgba(255,255,255,.3);border-radius:3px;overflow:hidden}
-.progress-bar-fill{height:100%;background:#fff;border-radius:3px;transition:width .4s ease}
-.progress-text{font-size:12px;opacity:.9;margin-top:5px;text-align:right}
+/* Layout */
+.sidebar{position:fixed;top:0;left:0;width:220px;height:100vh;background:#f0eeea;border-right:1px solid #e3e2de;overflow-y:auto;z-index:50;padding:12px 0}
+.main{margin-left:220px;min-height:100vh}
+.page-wrap{max-width:860px;margin:0 auto;padding:3rem 3rem 6rem}
 
-/* Tabs */
-.tabs{display:flex;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:88px;z-index:99}
-.tab{flex:1;padding:10px 4px;font-size:13px;font-weight:500;color:var(--muted);text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
-.tab.active{color:var(--green);border-bottom-color:var(--green)}
+/* Sidebar */
+.sb-title{font-size:12px;font-weight:600;color:#9b9a97;padding:6px 14px;text-transform:uppercase;letter-spacing:.05em;margin-top:8px}
+.sb-item{display:flex;align-items:center;gap:8px;padding:5px 14px;font-size:13px;color:#37352f;cursor:pointer;border-radius:4px;margin:1px 6px}
+.sb-item:hover,.sb-item.active{background:#e3e2de}
+.sb-icon{font-size:14px;width:18px;text-align:center}
 
-/* Content */
-.content{padding:0 0 20px}
+/* Page header */
+.page-icon{font-size:56px;margin-bottom:12px;display:block}
+.page-title{font-size:36px;font-weight:700;color:#37352f;margin-bottom:4px;outline:none}
+.page-sub{font-size:14px;color:#9b9a97;margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid #e3e2de}
 
-/* Section */
-.section{margin:12px 14px 4px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+/* Notion blocks */
+.h1{font-size:24px;font-weight:700;margin:2rem 0 .5rem}
+.h2{font-size:20px;font-weight:600;margin:1.5rem 0 .4rem}
+.h3{font-size:16px;font-weight:600;margin:1.2rem 0 .3rem;color:#5c5c5a}
+.divider{border:none;border-top:1px solid #e3e2de;margin:1.5rem 0}
+.callout{display:flex;gap:12px;background:#f0eeea;border-radius:6px;padding:14px 16px;margin:.75rem 0}
+.callout-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.callout-text{font-size:14px;color:#37352f;line-height:1.6}
+.callout.green{background:#e9f4f2}
+.callout.amber{background:#fdf3e7}
+.callout.blue{background:#e8f0fb}
+.callout.purple{background:#f3f0fa}
 
-/* Task item */
-.task{display:flex;align-items:center;gap:14px;background:var(--card);padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;-webkit-tap-highlight-color:transparent}
-.task:active{background:#f0f0ee}
-.task:first-of-type{border-top:1px solid var(--border)}
-.task.checked{background:var(--green-light)}
-.task-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0}
-.task-text{flex:1;font-size:15px;line-height:1.4}
-.task-sub{font-size:12px;color:var(--muted);margin-top:1px}
-.task.checked .task-text{color:var(--green-dark)}
-.checkbox{width:24px;height:24px;border:2px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
-.task.checked .checkbox{background:var(--green);border-color:var(--green)}
-.checkmark{display:none;color:#fff;font-size:14px;font-weight:700}
-.task.checked .checkmark{display:block}
+/* Checklist */
+.checklist{margin:.25rem 0}
+.check-row{display:flex;align-items:flex-start;gap:10px;padding:4px 0;font-size:14px}
+.check-row.daily-item{cursor:pointer}
+.cb{width:16px;height:16px;border:1.5px solid #c7c7c5;border-radius:3px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.cb.checked{background:#0f7b6c;border-color:#0f7b6c}
+.cb.checked::after{content:'✓';color:#fff;font-size:10px;font-weight:700}
+.check-text{flex:1;line-height:1.5}
+.check-text.done{text-decoration:line-through;color:#9b9a97}
+.check-text.strikethrough{text-decoration:line-through;color:#9b9a97}
 
-/* Stats cards */
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;margin-top:4px}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px}
-.stat-num{font-size:28px;font-weight:700;color:var(--text)}
-.stat-num.g{color:var(--green)}
-.stat-num.a{color:var(--amber)}
-.stat-lbl{font-size:12px;color:var(--muted);margin-top:2px}
+/* Columns */
+.cols{display:grid;gap:16px;margin:.75rem 0}
+.cols-2{grid-template-columns:1fr 1fr}
+.cols-3{grid-template-columns:1fr 1fr 1fr}
+.col-card{background:#fff;border:1px solid #e3e2de;border-radius:8px;padding:14px 16px}
+.col-card-title{font-size:13px;font-weight:600;color:#9b9a97;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em}
 
-/* Calendar mini */
-.cal-wrap{padding:14px}
-.cal-month{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:10px}
-.cal-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border)}
-.cal-mn{font-size:14px;font-weight:600}
-.cal-pct{font-size:13px;color:var(--green);font-weight:600}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:8px}
-.cal-dl{font-size:10px;color:var(--muted);text-align:center;padding:2px 0}
-.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .1s}
-.cal-day:active{opacity:.7}
-.cal-day.today{background:var(--green);color:#fff;font-weight:700}
-.cal-day.done{background:var(--green-light);color:var(--green-dark)}
-.cal-day.partial{background:var(--amber-light);color:var(--amber)}
-.cal-day.dis{opacity:.2;pointer-events:none}
-.cal-day.emp{pointer-events:none}
+/* Tags */
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:.5rem 0}
+.tag{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:4px;font-size:12px;font-weight:500}
+.tag.green{background:#d4edea;color:#0a5c51}
+.tag.amber{background:#fde8ca;color:#8a4500}
+.tag.blue{background:#daeaf8;color:#1a4f82}
+.tag.purple{background:#e8e3f5;color:#4a3580}
+.tag.red{background:#fce4e4;color:#8b1f1f}
+.tag.gray{background:#e9e9e7;color:#4a4a47}
 
-/* Weekly */
-.weekly-task{display:flex;align-items:center;gap:14px;background:var(--card);padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;-webkit-tap-highlight-color:transparent}
-.weekly-task:first-of-type{border-top:1px solid var(--border)}
-.weekly-task.checked{background:var(--green-light)}
-.weekly-task:active{background:#f0f0ee}
-.weekly-task.checked .checkbox{background:var(--green);border-color:var(--green)}
-.weekly-task.checked .checkmark{display:block}
-.week-badge{font-size:11px;background:#e9e9e7;color:#5c5c5a;padding:2px 8px;border-radius:10px;font-weight:500}
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:.75rem 0}
+.stat-card{background:#fff;border:1px solid #e3e2de;border-radius:8px;padding:12px 14px}
+.stat-lbl{font-size:11px;color:#9b9a97;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.stat-val{font-size:22px;font-weight:700;color:#37352f}
+.stat-val.g{color:#0f7b6c}
+.stat-val.a{color:#d9730d}
 
-/* Bottom nav */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;z-index:200;padding-bottom:env(safe-area-inset-bottom)}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px 6px;cursor:pointer;color:var(--muted);-webkit-tap-highlight-color:transparent;transition:color .15s}
-.nav-btn.active{color:var(--green)}
-.nav-icon{font-size:20px;margin-bottom:2px}
-.nav-label{font-size:10px;font-weight:500}
+/* Calendar */
+.month-block{border:1px solid #e3e2de;border-radius:8px;background:#fff;margin-bottom:12px;overflow:hidden}
+.month-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;border-bottom:1px solid #e3e2de}
+.month-hdr:hover{background:#f7f6f3}
+.month-nm{font-size:13px;font-weight:600}
+.month-right{display:flex;align-items:center;gap:8px}
+.mbar{width:80px;height:4px;background:#e3e2de;border-radius:2px;overflow:hidden}
+.mbar-f{height:100%;background:#0f7b6c;border-radius:2px;transition:width .3s}
+.mpct{font-size:12px;color:#9b9a97;min-width:28px;text-align:right}
+.chev{font-size:9px;color:#9b9a97;transition:transform .2s;display:inline-block}
+.chev.open{transform:rotate(90deg)}
+.month-body{padding:10px 12px}
+.day-labels{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.dl{font-size:10px;color:#9b9a97;text-align:center;padding-bottom:3px}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.dc{border:1px solid #e3e2de;border-radius:4px;padding:3px 4px;min-height:40px;cursor:pointer;transition:background .1s}
+.dc:hover{background:#f7f6f3}
+.dc.emp{border:none;background:none;pointer-events:none}
+.dc.dis{opacity:.2;pointer-events:none}
+.dc.td{border:2px solid #0f7b6c}
+.dc.dn{background:#e9f4f2;border-color:#9dc9c4}
+.dc.pt{background:#fdf3e7;border-color:#f5c77a}
+.dn-{font-size:10px;font-weight:600;color:#9b9a97}
+.dc.td .dn-{color:#0f7b6c}
+.dc.dn .dn-{color:#0f7b6c}
+.dc.pt .dn-{color:#d9730d}
+.dotrow{display:flex;flex-wrap:wrap;gap:2px;margin-top:3px}
+.dot{width:4px;height:4px;border-radius:50%;background:#e3e2de}
+.dot.on{background:#0f7b6c}
 
-/* Toast */
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#37352f;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:all .3s;z-index:300;pointer-events:none;white-space:nowrap}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* Chart */
+.chart-box{background:#fff;border:1px solid #e3e2de;border-radius:8px;padding:16px;margin:.75rem 0}
+.chart-inner{position:relative;height:180px}
+.leg{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:#6b6b68}
+.leg span{display:flex;align-items:center;gap:4px}
+.ld{width:10px;height:10px;border-radius:2px}
 
 /* Modal */
-.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:400;align-items:flex-end;justify-content:center}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;align-items:center;justify-content:center}
 .ov.open{display:flex}
-.modal{background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)}
-.m-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid var(--border);position:sticky;top:0;background:#fff;z-index:1}
-.m-title{font-size:15px;font-weight:700;color:var(--text)}
-.m-close{background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;padding:0 4px;line-height:1}
-.m-section{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:12px 18px 4px}
-.t-row{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid var(--border);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .1s}
-.t-row:active{background:#f7f6f3}
-.t-row.on{background:var(--green-light)}
-.t-cb{width:22px;height:22px;border:2px solid var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
-.t-row.on .t-cb{background:var(--green);border-color:var(--green)}
-.t-ck{display:none;color:#fff;font-size:13px;font-weight:700}
-.t-row.on .t-ck{display:block}
-.t-lbl{font-size:14px;color:var(--text)}
-.t-row.on .t-lbl{color:var(--green-dark)}
-.m-footer{padding:14px 18px}
-.m-save{background:var(--green);color:#fff;border:none;border-radius:25px;padding:12px 40px;font-size:15px;font-weight:600;cursor:pointer;width:100%}
-.m-save:active{background:var(--green-dark)}
+.modal{background:#fff;border-radius:10px;width:320px;max-width:92vw;box-shadow:0 8px 32px rgba(0,0,0,.18)}
+.m-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #e3e2de}
+.m-title{font-size:14px;font-weight:600}
+.m-close{background:none;border:none;font-size:20px;color:#9b9a97;cursor:pointer}
+.m-body{padding:8px 16px 4px;max-height:60vh;overflow-y:auto}
+.m-section{font-size:11px;font-weight:600;color:#9b9a97;text-transform:uppercase;letter-spacing:.04em;padding:8px 0 4px;border-top:1px solid #e3e2de}
+.m-section:first-child{border-top:none}
+.t-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0efed}
+.t-row:last-child{border-bottom:none}
+.t-cb{width:16px;height:16px;border:1.5px solid #c7c7c5;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.t-cb.on{background:#0f7b6c;border-color:#0f7b6c}
+.t-cb.on::after{content:'✓';color:#fff;font-size:10px;font-weight:700}
+.t-lbl{font-size:13px}
+.t-lbl.done{text-decoration:line-through;color:#9b9a97}
+.m-footer{padding:10px 16px 14px;display:flex;justify-content:flex-end}
+.save-btn{background:#0f7b6c;color:#fff;border:none;border-radius:5px;padding:7px 18px;font-size:13px;font-weight:600;cursor:pointer}
+.save-btn:hover{background:#0a6659}
+
+/* Tabs */
+.tabs{display:flex;gap:2px;border-bottom:1px solid #e3e2de;margin-bottom:1.5rem}
+.tab{padding:8px 16px;font-size:13px;font-weight:500;color:#9b9a97;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab:hover{color:#37352f}
+.tab.active{color:#37352f;border-bottom-color:#37352f}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+@media(max-width:700px){
+  .sidebar{display:none}
+  .main{margin-left:0}
+  .page-wrap{padding:1.5rem 1rem 4rem}
+  .cols-2,.cols-3{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-top">
-    <div>
-      <div class="header-date" id="hdr-date"></div>
-      <div class="header-title">✨ Daily Mission</div>
-    </div>
-    <button class="reset-btn" onclick="resetToday()">Шинэчлэх</button>
-  </div>
-  <div class="progress-bar-bg"><div class="progress-bar-fill" id="prog-fill" style="width:0%"></div></div>
-  <div class="progress-text" id="prog-text">0 / 11 • 0%</div>
+<div class="sidebar">
+  <div class="sb-title">Навигац</div>
+  <div class="sb-item active" onclick="showTab('plan')"><span class="sb-icon">🌟</span>Жилийн төлөвлөгөө</div>
+  <div class="sb-item" onclick="showTab('daily')"><span class="sb-icon">📋</span>Daily Mission</div>
+  <div class="sb-item" onclick="showTab('weekly')"><span class="sb-icon">📊</span>Weekly Focus</div>
+  <div class="sb-item" onclick="showTab('tracker')"><span class="sb-icon">📅</span>Calendar Tracker</div>
+  <div class="sb-item" onclick="showTab('outcome')"><span class="sb-icon">🏆</span>Year-End Outcome</div>
 </div>
+
+<div class="main">
+<div class="page-wrap">
+
+<span class="page-icon">✨</span>
+<div class="page-title">2026 Life System</div>
+<div class="page-sub">Миний 2026 оны бүрэн систем — Daily mission · Weekly focus · Tracker · Зорилго</div>
 
 <div class="tabs">
-  <div class="tab active" onclick="showPage('daily')"><div class="nav-icon">📋</div>Daily</div>
-  <div class="tab" onclick="showPage('weekly')"><div class="nav-icon">📊</div>Weekly</div>
-  <div class="tab" onclick="showPage('calendar')"><div class="nav-icon">📅</div>Tracker</div>
+  <div class="tab active" onclick="showTab('plan')">🌟 Жилийн төлөвлөгөө</div>
+  <div class="tab" onclick="showTab('daily')">📋 Daily</div>
+  <div class="tab" onclick="showTab('weekly')">📊 Weekly</div>
+  <div class="tab" onclick="showTab('tracker')">📅 Tracker</div>
+  <div class="tab" onclick="showTab('outcome')">🏆 Outcome</div>
 </div>
 
-<!-- DAILY PAGE -->
-<div id="page-daily" class="content">
-  <div class="section">🌅 Өглөө</div>
-  <div id="tasks-morning"></div>
-  <div class="section" style="margin-top:16px">☀️ Өдөр</div>
-  <div id="tasks-day"></div>
-  <div class="section" style="margin-top:16px">🌙 Орой</div>
-  <div id="tasks-evening"></div>
-</div>
+<!-- ===== TAB: PLAN ===== -->
+<div class="tab-content active" id="tab-plan">
+  <div class="h1">🌟 2026 ОНЫ ЗОРИЛГО & СИСТЕМ ROADMAP</div>
 
-<!-- WEEKLY PAGE -->
-<div id="page-weekly" class="content" style="display:none">
-  <div class="section" style="margin-top:12px">📊 7 Хоног бүр — <span class="week-badge" id="week-label"></span></div>
-  <div id="weekly-tasks"></div>
-  <div class="stats">
-    <div class="stat-card"><div class="stat-num g" id="w-done">0</div><div class="stat-lbl">Энэ 7 хоногт</div></div>
-    <div class="stat-card"><div class="stat-num" id="w-streak">0🔥</div><div class="stat-lbl">7 хоногийн streak</div></div>
+  <div class="callout green">
+    <span class="callout-icon">🧩</span>
+    <div class="callout-text"><strong>Гол зорилт:</strong> 💰 $100,000 орлого олох + Сэтгэл, бие, оюуны тэнцвэрийг бий болгох</div>
+  </div>
+
+  <div class="h2">💎 Гол чиглэлүүд</div>
+  <div class="cols cols-2">
+    <div class="col-card">
+      <div class="col-card-title">💰 Орлого & Карьер</div>
+      <div class="check-row"><span>💰</span><span class="check-text">Орлого нэмэгдүүлэх систем — ажлын чанар + шинэ орлого эх үүсвэр</span></div>
+      <div class="check-row"><span>📈</span><span class="check-text">Forex — тогтмол суралцах, дадлага хийх</span></div>
+    </div>
+    <div class="col-card">
+      <div class="col-card-title">🧠 Хэл & Оюун</div>
+      <div class="check-row"><span>🗣</span><span class="check-text">English upper-intermediate түвшинд хүрэх</span></div>
+      <div class="check-row"><span>🇯🇵</span><span class="check-text">Japanese upper-intermediate түвшинд хүрэх</span></div>
+    </div>
+    <div class="col-card">
+      <div class="col-card-title">💪 Бие & Эрүүл мэнд</div>
+      <div class="check-row"><span>💪</span><span class="check-text">Healthy Lifestyle — дасгал, хоол, унтлагын хэм</span></div>
+      <div class="check-row"><span>🍽</span><span class="check-text">Mindful eating — 80% хүртэл идэх</span></div>
+    </div>
+    <div class="col-card">
+      <div class="col-card-title">🧘 Энерги & Фокус</div>
+      <div class="check-row"><span>🧘</span><span class="check-text">Energy & Focus Management — бясалгал, тайван байдал</span></div>
+      <div class="check-row"><span>🌙</span><span class="check-text">Final practice — өдөр бүр</span></div>
+    </div>
+    <div class="col-card">
+      <div class="col-card-title">📈 Өөрийгөө сорих</div>
+      <div class="check-row"><span>📈</span><span class="check-text">12 өөр туршлага цуглуулах — сар бүр нэг</span></div>
+      <div class="check-row"><span>✍️</span><span class="check-text">Өөрийгөө үнэлэх шинэ систем бий болгох</span></div>
+    </div>
+    <div class="col-card">
+      <div class="col-card-title">💞 Харилцаа & Аялал</div>
+      <div class="check-row"><span>💞</span><span class="check-text">Хүмүүсийн харилцаанд чанар нэмэх</span></div>
+      <div class="check-row"><span>🧳</span><span class="check-text">Аялал, шинэ орчны мэдрэмж авах</span></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div class="h2">🏷 2026 Tags</div>
+  <div class="tags">
+    <span class="tag green">💰 $100K орлого</span>
+    <span class="tag blue">🗣 English</span>
+    <span class="tag blue">🇯🇵 Japanese</span>
+    <span class="tag amber">📈 Forex</span>
+    <span class="tag purple">🧘 Mindfulness</span>
+    <span class="tag green">💪 Fitness</span>
+    <span class="tag red">🍽 Mindful eating</span>
+    <span class="tag gray">🧳 Travel</span>
+    <span class="tag purple">✍️ Journaling</span>
+    <span class="tag amber">📖 Reading</span>
   </div>
 </div>
 
-<!-- CALENDAR PAGE -->
-<div id="page-calendar" class="content" style="display:none">
-  <div class="stats">
-    <div class="stat-card"><div class="stat-num g" id="s-pct">0%</div><div class="stat-lbl">Нийт гүйцэтгэл</div></div>
-    <div class="stat-card"><div class="stat-num" id="s-streak">0🔥</div><div class="stat-lbl">Streak өдөр</div></div>
-    <div class="stat-card"><div class="stat-num g" id="s-done">0</div><div class="stat-lbl">Бүрэн өдөр</div></div>
-    <div class="stat-card"><div class="stat-num a" id="s-partial">0</div><div class="stat-lbl">Хэсэгчилсэн</div></div>
+<!-- ===== TAB: DAILY ===== -->
+<div class="tab-content" id="tab-daily">
+  <div class="h1">📋 DAILY MISSION</div>
+  <div class="callout amber">
+    <span class="callout-icon">⚡</span>
+    <div class="callout-text">Эдгээр даалгаврыг өдөр бүр гүйцэтгэснээр жилийн эцэст тогтвортой систем бий болно.</div>
   </div>
-  <div class="cal-wrap" id="cal-wrap"></div>
+
+  <div class="h2">🌅 Өглөөний хэсэг</div>
+  <div class="checklist" id="daily-morning">
+    <div class="check-row daily-item" data-id="d1"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">🧘‍♀️ Бясалгал — 10–15 мин</span></div>
+    <div class="check-row daily-item" data-id="d2"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">🧘‍♀️ ENERGY SCAN — ӨГЛӨӨ (1/3)</span></div>
+    <div class="check-row daily-item" data-id="d3"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">💧 Ус уух + ор дэрээ эмхлэх</span></div>
+  </div>
+
+  <div class="h2">☀️ Өдрийн хэсэг</div>
+  <div class="checklist">
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">📖 5–10 хуудас ном унших</span></div>
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">🗣 English — 5 мин – 1 цаг</span></div>
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">📈 5–60 минут Forex хичээл</span></div>
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">💪 5–30 мин дасгал хийх</span></div>
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">🍽 80% хүртэл идэх (mindful eating)</span></div>
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">🧹 Өрөө цэвэрлэх, хувийн орон зайгаа арчлах</span></div>
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">🧘‍♀️ ENERGY SCAN — ӨДӨР (2/3)</span></div>
+  </div>
+
+  <div class="h2">🌙 Оройн хэсэг</div>
+  <div class="checklist">
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">💭 Бодол бичих / Тэмдэглэл</span></div>
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">🧘‍♀️ ENERGY SCAN — ОРОЙ (3/3)</span></div>
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">🌙 FINAL PRACTICE</span></div>
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">💤 7~8 цаг унтах</span></div>
+  </div>
+
+  <hr class="divider">
+  <div class="callout blue">
+    <span class="callout-icon">💡</span>
+    <div class="callout-text"><strong>Дараагийн шат:</strong> Calendar Tracker таб руу орж өдөр бүрийн гүйцэтгэлээ бүртгэж байгаарай.</div>
+  </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- ===== TAB: WEEKLY ===== -->
+<div class="tab-content" id="tab-weekly">
+  <div class="h1">📊 WEEKLY FOCUS</div>
+  <div class="callout purple">
+    <span class="callout-icon">🌟</span>
+    <div class="callout-text">7 хоног бүр эдгээрийг нэг удаа гүйцэтгэснээр сарын том зорилгод ойртоно.</div>
+  </div>
+
+  <div class="h2">7 Хоног бүрийн даалгавар</div>
+  <div class="checklist">
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">📊 1 удаа мөнгөний менежментээ шалгах</span></div>
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">🌌 DEEP AFFIRMATION PRACTICE</span></div>
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">💬 1 удаа найз, гэр бүлийн хүнтэй чанартай харилцах</span></div>
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">✍️ 1 удаа өөрийгөө үнэлэх бичлэг / reflection хийх</span></div>
+  </div>
+
+  <hr class="divider">
+  <div class="h2">📈 7 хоногийн ахиц (энэ 7 хоног)</div>
+  <div class="cols cols-2">
+    <div class="col-card">
+      <div class="col-card-title">Гүйцэтгэсэн</div>
+      <div id="week-done-list" style="font-size:13px;color:#9b9a97">Одоохондоо бүртгэл алга</div>
+    </div>
+    <div class="col-card">
+      <div class="col-card-title">Ирэх 7 хоногийн фокус</div>
+      <div style="font-size:13px;color:#37352f">
+        <div class="check-row"><span>🎯</span><span>Forex — нэг шинэ strategy судлах</span></div>
+        <div class="check-row"><span>🎯</span><span>English — нэг podcast дуусгах</span></div>
+        <div class="check-row"><span>🎯</span><span>Шинэ туршлага нэмэх</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB: TRACKER ===== -->
+<div class="tab-content" id="tab-tracker">
+  <div class="h1">📅 Calendar Tracker 2026</div>
+  <div class="stats" id="stats-row">
+    <div class="stat-card"><div class="stat-lbl">Нийт өдөр</div><div class="stat-val" id="s-total">—</div></div>
+    <div class="stat-card"><div class="stat-lbl">Бүрэн</div><div class="stat-val g" id="s-done">—</div></div>
+    <div class="stat-card"><div class="stat-lbl">Хэсэгчилсэн</div><div class="stat-val a" id="s-partial">—</div></div>
+    <div class="stat-card"><div class="stat-lbl">Гүйцэтгэл</div><div class="stat-val g" id="s-pct">—</div></div>
+  </div>
+  <div id="calendar"></div>
+  <div class="h2" style="margin-top:2rem">Сар бүрийн гүйцэтгэл</div>
+  <div class="chart-box">
+    <div class="chart-inner"><canvas id="progressChart"></canvas></div>
+    <div class="leg">
+      <span><span class="ld" style="background:#0f7b6c"></span>80%+</span>
+      <span><span class="ld" style="background:#d9730d"></span>40–79%</span>
+      <span><span class="ld" style="background:#c7c7c5"></span>40%-аас доош</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB: OUTCOME ===== -->
+<div class="tab-content" id="tab-outcome">
+  <div class="h1">🏆 YEAR-END OUTCOME</div>
+  <div class="callout green">
+    <span class="callout-icon">🌟</span>
+    <div class="callout-text">2026 оны 12-р сарын 31-нд би дараах зүйлсийг хийж гүйцэтгэсэн байна.</div>
+  </div>
+
+  <div class="h2">🎯 Том зорилтууд</div>
+  <div class="checklist">
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">💰 $100,000 орлого олсон байх</span></div>
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">🌿 Тогтвортой, эрүүл lifestyle бий болгосон байх</span></div>
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">🗣 English upper-intermediate түвшинд хүрсэн байх</span></div>
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">🇯🇵 Japanese upper-intermediate түвшинд хүрсэн байх</span></div>
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">🎭 12 өөр туршлага цуглуулсан байх (сар бүр 1)</span></div>
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">📊 Өөрийгөө үнэлэх шинэ систем бий болгосон байх</span></div>
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">📈 Forex — тогтмол ашигтай trading хийж байх</span></div>
+    <div class="check-row daily-item"><div class="cb" onclick="toggleStatic(this)"></div><span class="check-text">🧳 Шинэ газар аялсан байх</span></div>
+  </div>
+
+  <hr class="divider">
+  <div class="h2">📅 Сар бүрийн шинэ туршлага</div>
+  <div class="cols cols-3" id="monthly-exp">
+  </div>
+</div>
+
+</div><!-- /page-wrap -->
+</div><!-- /main -->
 
 <!-- Modal -->
 <div class="ov" id="ov">
   <div class="modal">
     <div class="m-hdr">
-      <div class="m-title" id="m-title">Өдрийн даалгавар</div>
+      <div class="m-title" id="m-title">Өдрийн хяналт</div>
       <button class="m-close" onclick="closeModal()">×</button>
     </div>
-    <div id="m-body"></div>
-    <div class="m-footer"><button class="m-save" onclick="closeModal()">✓ Хадгалах</button></div>
+    <div class="m-body" id="m-body"></div>
+    <div class="m-footer"><button class="save-btn" onclick="closeModal()">Хадгалах ✓</button></div>
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-const TODAY_OBJ = new Date();
-const YEAR = 2026;
-// For testing use actual today; for 2026 tracker use fixed start
-const START = new Date(2026,2,15);
-
-function todayKey(){
-  const d=new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
-function dateKey(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
-
-const MORNING = [
-  {id:'m1',icon:'🧘‍♀️',text:'Бясалгал',sub:'10–15 минут'},
-  {id:'m2',icon:'🧘‍♀️',text:'ENERGY SCAN — өглөө',sub:'Өглөөний байдлаа шалга'},
-  {id:'m3',icon:'💧',text:'Ус уух + ор дэрээ эмхлэх',sub:''},
+// ---- Config ----
+const DAILY_TASKS = [
+  {section:'🌅 Өглөө', tasks:['🧘‍♀️ Бясалгал — 10–15 мин','🧘‍♀️ ENERGY SCAN — өглөө','💧 Ус уух + ор дэрээ эмхлэх']},
+  {section:'☀️ Өдөр', tasks:['📖 5–10 хуудас ном унших','🗣 English — 5мин–1цаг','📈 5–60мин Forex хичээл','💪 5–30мин дасгал','🍽 80% хүртэл идэх','🧹 Өрөө цэвэрлэх','🧘‍♀️ ENERGY SCAN — өдөр']},
+  {section:'🌙 Орой', tasks:['💭 Бодол бичих / Тэмдэглэл','🧘‍♀️ ENERGY SCAN — орой','🌙 FINAL PRACTICE','💤 7~8 цаг унтах']}
 ];
-const DAY = [
-  {id:'d1',icon:'📖',text:'Ном унших',sub:'5–10 хуудас'},
-  {id:'d2',icon:'🗣',text:'English',sub:'5 мин – 1 цаг'},
-  {id:'d3',icon:'📈',text:'Forex хичээл',sub:'5–60 минут'},
-  {id:'d4',icon:'💪',text:'Дасгал хийх',sub:'5–30 минут'},
-  {id:'d5',icon:'🍽',text:'Mindful eating',sub:'80% хүртэл идэх'},
-  {id:'d6',icon:'🧹',text:'Өрөө цэвэрлэх',sub:'Хувийн орон зайгаа арчлах'},
-  {id:'d7',icon:'🧘‍♀️',text:'ENERGY SCAN — өдөр',sub:'Өдрийн байдлаа шалга'},
-];
-const EVENING = [
-  {id:'e1',icon:'💭',text:'Бодол бичих / Тэмдэглэл',sub:''},
-  {id:'e2',icon:'🧘‍♀️',text:'ENERGY SCAN — орой',sub:'Оройн байдлаа шалга'},
-  {id:'e3',icon:'🌙',text:'FINAL PRACTICE',sub:''},
-  {id:'e4',icon:'💤',text:'7~8 цаг унтах',sub:''},
-];
-const WEEKLY_LIST = [
-  {id:'w1',icon:'📊',text:'Мөнгөний менежментээ шалгах'},
-  {id:'w2',icon:'🌌',text:'DEEP AFFIRMATION PRACTICE'},
-  {id:'w3',icon:'💬',text:'Найз/гэр бүлтэй чанартай харилцах'},
-  {id:'w4',icon:'✍️',text:'Өөрийгөө үнэлэх / Reflection'},
-];
-const ALL_TASKS = [...MORNING,...DAY,...EVENING];
+const ALL_TASKS = DAILY_TASKS.flatMap(s=>s.tasks);
 const N = ALL_TASKS.length;
+const TODAY = new Date(2026,2,15);
+const MONTHS_MN=['1-р сар','2-р сар','3-р сар','4-р сар','5-р сар','6-р сар','7-р сар','8-р сар','9-р сар','10-р сар','11-р сар','12-р сар'];
+const DAYS_MN=['Да','Мя','Лх','Пү','Ба','Бя','Ня'];
 
 let data={};
-try{const s=localStorage.getItem('dm2026');if(s)data=JSON.parse(s);}catch(e){}
-function save(){try{localStorage.setItem('dm2026',JSON.stringify(data));}catch(e){}}
+try{const s=localStorage.getItem('tracker2026_full');if(s)data=JSON.parse(s);}catch(e){}
+function save(){try{localStorage.setItem('tracker2026_full',JSON.stringify(data));}catch(e){}}
+function key(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
+function stateOf(k){const d=data[k];if(!d||d.every(v=>!v))return'empty';if(d.every(v=>v))return'done';return'partial';}
 
-function getDay(key){return data[key]||{};}
-function setTask(key,id,val){if(!data[key])data[key]={};data[key][id]=val;save();}
-function countDone(key){const d=getDay(key);return ALL_TASKS.filter(t=>d[t.id]).length;}
-function stateOf(key){const c=countDone(key);if(c===0)return'empty';if(c===N)return'done';return'partial';}
-
-// Weekly key = monday of week
-function weekKey(d){const dt=new Date(d||Date.now());const day=dt.getDay()||7;dt.setDate(dt.getDate()-day+1);return dateKey(dt.getFullYear(),dt.getMonth(),dt.getDate());}
-
-function buildTask(task, key, container){
-  const div=document.createElement('div');
-  const checked=!!(getDay(key)[task.id]);
-  div.className='task'+(checked?' checked':'');
-  div.innerHTML=`<div class="task-icon">${task.icon}</div>
-    <div style="flex:1"><div class="task-text">${task.text}</div>${task.sub?`<div class="task-sub">${task.sub}</div>`:''}</div>
-    <div class="checkbox"><span class="checkmark">✓</span></div>`;
-  div.onclick=()=>{
-    const now=!!(getDay(key)[task.id]);
-    setTask(key,task.id,!now);
-    div.classList.toggle('checked',!now);
-    const cb=div.querySelector('.checkbox');
-    cb.style.background=!now?'var(--green)':'';
-    cb.style.borderColor=!now?'var(--green)':'var(--border)';
-    div.querySelector('.checkmark').style.display=!now?'block':'none';
-    updateProgress();
-    if(!now) showToast(task.text+' ✓');
-  };
-  container.appendChild(div);
+// ---- Tabs ----
+function showTab(id){
+  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelectorAll('.tab').forEach(el=>{if(el.textContent.toLowerCase().includes(id)||el.getAttribute('onclick').includes(id))el.classList.add('active');});
+  document.querySelectorAll('.sb-item').forEach(el=>{el.classList.remove('active');if(el.getAttribute('onclick')&&el.getAttribute('onclick').includes(id))el.classList.add('active');});
+  if(id==='tracker'){renderCalendar();updateStats();renderChart();}
 }
 
-function renderDaily(){
-  const key=todayKey();
-  ['tasks-morning','tasks-day','tasks-evening'].forEach(id=>document.getElementById(id).innerHTML='');
-  MORNING.forEach(t=>buildTask(t,key,document.getElementById('tasks-morning')));
-  DAY.forEach(t=>buildTask(t,key,document.getElementById('tasks-day')));
-  EVENING.forEach(t=>buildTask(t,key,document.getElementById('tasks-evening')));
-  updateProgress();
+// ---- Static checkboxes ----
+function toggleStatic(cb){
+  cb.classList.toggle('on');
+  const lbl=cb.nextElementSibling;
+  if(lbl)lbl.classList.toggle('done');
 }
 
-function updateProgress(){
-  const key=todayKey();
-  const done=countDone(key);
-  const pct=Math.round(done/N*100);
-  document.getElementById('prog-fill').style.width=pct+'%';
-  document.getElementById('prog-text').textContent=`${done} / ${N} • ${pct}%`;
-}
-
-function renderWeekly(){
-  const wk=weekKey();
-  const container=document.getElementById('weekly-tasks');
-  container.innerHTML='';
-  if(!data['weekly'])data['weekly']={};
-  const wd=data['weekly'][wk]||{};
-  WEEKLY_LIST.forEach(task=>{
-    const div=document.createElement('div');
-    const checked=!!wd[task.id];
-    div.className='weekly-task'+(checked?' checked':'');
-    div.innerHTML=`<div class="task-icon">${task.icon}</div>
-      <div style="flex:1"><div class="task-text">${task.text}</div></div>
-      <div class="checkbox"><span class="checkmark">✓</span></div>`;
-    div.onclick=()=>{
-      if(!data['weekly'])data['weekly']={};
-      if(!data['weekly'][wk])data['weekly'][wk]={};
-      const now=!!data['weekly'][wk][task.id];
-      data['weekly'][wk][task.id]=!now;
-      save();
-      div.classList.toggle('checked',!now);
-      const cb=div.querySelector('.checkbox');
-      cb.style.background=!now?'var(--green)':'';
-      cb.style.borderColor=!now?'var(--green)':'var(--border)';
-      div.querySelector('.checkmark').style.display=!now?'block':'none';
-      updateWeeklyStats();
-      if(!now) showToast(task.text+' ✓');
-    };
-    container.appendChild(div);
-  });
-  // Week label
-  const wdate=new Date(wk);
-  const wend=new Date(wdate);wend.setDate(wend.getDate()+6);
-  document.getElementById('week-label').textContent=`${wdate.getMonth()+1}/${wdate.getDate()} — ${wend.getMonth()+1}/${wend.getDate()}`;
-  updateWeeklyStats();
-}
-
-function updateWeeklyStats(){
-  const wk=weekKey();
-  const wd=(data['weekly']&&data['weekly'][wk])||{};
-  const done=WEEKLY_LIST.filter(t=>wd[t.id]).length;
-  document.getElementById('w-done').textContent=done+'/'+WEEKLY_LIST.length;
-  // streak
-  let streak=0;
-  let d=new Date();
-  for(let i=0;i<52;i++){
-    const wk2=weekKey(d);
-    const wd2=(data['weekly']&&data['weekly'][wk2])||{};
-    if(WEEKLY_LIST.some(t=>wd2[t.id]))streak++;
-    else if(i>0)break;
-    d.setDate(d.getDate()-7);
-  }
-  document.getElementById('w-streak').textContent=streak+'🔥';
-}
-
-function renderCalendar(){
-  const wrap=document.getElementById('cal-wrap');wrap.innerHTML='';
-  const MONTHS=['1-р','2-р','3-р','4-р','5-р','6-р','7-р','8-р','9-р','10-р','11-р','12-р'];
-  const DL=['Да','Мя','Лх','Пү','Ба','Бя','Ня'];
-  const now=new Date();
-  for(let m=2;m<=11;m++){
-    const dim=new Date(2026,m+1,0).getDate();
-    let total=0,done=0,partial=0;
-    for(let d=1;d<=dim;d++){
-      if(m===2&&d<15)continue;
-      total++;const s=stateOf(dateKey(2026,m,d));
-      if(s==='done')done++;else if(s==='partial')partial++;
-    }
-    const pct=total?Math.round((done+partial*.5)/total*100):0;
-    const block=document.createElement('div');block.className='cal-month';
-    const hdr=document.createElement('div');hdr.className='cal-hdr';
-    hdr.innerHTML=`<span class="cal-mn">2026 · ${MONTHS[m]} сар</span><span class="cal-pct">${pct}%</span>`;
-    block.appendChild(hdr);
-    const grid=document.createElement('div');grid.className='cal-grid';
-    DL.forEach(dl=>{const e=document.createElement('div');e.className='cal-dl';e.textContent=dl;grid.appendChild(e);});
-    const offset=(new Date(2026,m,1).getDay()+6)%7;
-    for(let i=0;i<offset;i++){const e=document.createElement('div');e.className='cal-day emp';grid.appendChild(e);}
-    for(let d=1;d<=dim;d++){
-      const k=dateKey(2026,m,d);
-      const dt=new Date(2026,m,d);
-      const isT=dt.toDateString()===now.toDateString();
-      const st=stateOf(k);
-      const cell=document.createElement('div');
-      let cls='cal-day';
-      if(m===2&&d<15)cls+=' dis';
-      else if(isT)cls+=' today';
-      else if(st==='done')cls+=' done';
-      else if(st==='partial')cls+=' partial';
-      cell.className=cls;cell.textContent=d;
-      if(!(m===2&&d<15)){(function(kk){cell.onclick=function(){openModal(kk);};})(k);}
-      grid.appendChild(cell);
-    }
-    block.appendChild(grid);wrap.appendChild(block);
-  }
-  updateCalStats();
-}
-
-function updateCalStats(){
-  let total=0,done=0,partial=0,streak=0;
-  for(let m=2;m<=11;m++){
-    const dim=new Date(2026,m+1,0).getDate();
-    for(let d=1;d<=dim;d++){
-      if(m===2&&d<15)continue;
-      total++;const s=stateOf(dateKey(2026,m,d));
-      if(s==='done')done++;else if(s==='partial')partial++;
-    }
-  }
-  // streak
-  const now=new Date();
-  for(let i=0;i<365;i++){
-    const d=new Date(now);d.setDate(d.getDate()-i);
-    const k=dateKey(d.getFullYear(),d.getMonth(),d.getDate());
-    const s=stateOf(k);
-    if(s==='done'||s==='partial')streak++;
-    else if(i>0)break;
-  }
-  const pct=total?Math.round((done+partial*.5)/total*100):0;
-  document.getElementById('s-pct').textContent=pct+'%';
-  document.getElementById('s-done').textContent=done;
-  document.getElementById('s-partial').textContent=partial;
-  document.getElementById('s-streak').textContent=streak+'🔥';
-}
-
-function showPage(id){
-  ['daily','weekly','calendar'].forEach(p=>{
-    document.getElementById('page-'+p).style.display=p===id?'block':'none';
-  });
-  document.querySelectorAll('.tab').forEach((t,i)=>{
-    t.classList.toggle('active',['daily','weekly','calendar'][i]===id);
-  });
-  if(id==='weekly')renderWeekly();
-  if(id==='calendar')renderCalendar();
-}
-
-function resetToday(){
-  if(!confirm('Өнөөдрийн бүх чагтыг арилгах уу?'))return;
-  const key=todayKey();
-  delete data[key];save();renderDaily();
-document.getElementById('ov').addEventListener('click',function(e){if(e.target===this)closeModal();});
-
-  showToast('Шинэчлэгдлээ');
-}
-
-
+// ---- Modal ----
+let modalKey=null;
 function openModal(k){
+  modalKey=k;
   const[y,m,d]=k.split('-').map(Number);
-  const mn=['1-р','2-р','3-р','4-р','5-р','6-р','7-р','8-р','9-р','10-р','11-р','12-р'];
-  document.getElementById('m-title').textContent=mn[m-1]+' сарын '+d+' — Даалгавар';
-  if(!data[k])data[k]={};
+  document.getElementById('m-title').textContent=`${y}/${m}/${d}`;
+  if(!data[k])data[k]=Array(N).fill(false);
   const body=document.getElementById('m-body');
   body.innerHTML='';
-  const SECTIONS=[{lbl:'🌅 Өглөө',tasks:MORNING},{lbl:'☀️ Өдөр',tasks:DAY},{lbl:'🌙 Орой',tasks:EVENING}];
-  SECTIONS.forEach(sec=>{
-    const sh=document.createElement('div');sh.className='m-section';sh.textContent=sec.lbl;body.appendChild(sh);
-    sec.tasks.forEach(task=>{
-      const row=document.createElement('div');
-      const checked=!!(data[k][task.id]);
-      row.className='t-row'+(checked?' on':'');
-      row.innerHTML='<div class="t-cb"><span class="t-ck">✓</span></div><div class="t-lbl">'+task.icon+' '+task.text+'</div>';
-      row.onclick=function(){
-        const now=!!(data[k][task.id]);
-        data[k][task.id]=!now;
-        save();
-        row.classList.toggle('on',!now);
-        renderCalendar();
-        updateCalStats();
-        if(!now)showToast(task.text+' ✓');
-      };
-      body.appendChild(row);
+  let idx=0;
+  DAILY_TASKS.forEach(sec=>{
+    const sh=document.createElement('div');sh.className='m-section';sh.textContent=sec.section;body.appendChild(sh);
+    sec.tasks.forEach((t,_)=>{
+      const i=idx++;
+      const row=document.createElement('div');row.className='t-row';
+      const cb=document.createElement('div');cb.className='t-cb'+(data[k][i]?' on':'');
+      const ii=i;
+      cb.onclick=()=>{data[k][ii]=!data[k][ii];save();renderCalendar();updateStats();renderChart();openModal(k);};
+      const lbl=document.createElement('div');lbl.className='t-lbl'+(data[k][i]?' done':'');lbl.textContent=t;
+      row.appendChild(cb);row.appendChild(lbl);body.appendChild(row);
     });
   });
   document.getElementById('ov').classList.add('open');
 }
+function closeModal(){document.getElementById('ov').classList.remove('open');modalKey=null;}
+document.getElementById('ov').addEventListener('click',e=>{if(e.target===document.getElementById('ov'))closeModal();});
 
-function closeModal(){
-  document.getElementById('ov').classList.remove('open');
+// ---- Calendar ----
+function renderCalendar(){
+  const cal=document.getElementById('calendar');cal.innerHTML='';
+  for(let m=2;m<=11;m++){
+    const dim=new Date(2026,m+1,0).getDate();
+    let total=0,done=0,partial=0;
+    for(let d=1;d<=dim;d++){if(m===2&&d<15)continue;total++;const s=stateOf(key(2026,m,d));if(s==='done')done++;else if(s==='partial')partial++;}
+    const pct=total?Math.round((done+partial*.5)/total*100):0;
+
+    const sec=document.createElement('div');sec.className='month-block';
+    const hdr=document.createElement('div');hdr.className='month-hdr';
+    hdr.innerHTML=`<span class="month-nm">2026 · ${MONTHS_MN[m]}</span>
+      <div class="month-right"><div class="mbar"><div class="mbar-f" style="width:${pct}%"></div></div><span class="mpct">${pct}%</span><span class="chev open">▶</span></div>`;
+    hdr.onclick=()=>{const b=sec.querySelector('.month-body');const c=hdr.querySelector('.chev');const op=b.style.display!=='none';b.style.display=op?'none':'';c.classList.toggle('open',!op);};
+    sec.appendChild(hdr);
+
+    const body=document.createElement('div');body.className='month-body';
+    const lrow=document.createElement('div');lrow.className='day-labels';
+    DAYS_MN.forEach(dl=>{const e=document.createElement('div');e.className='dl';e.textContent=dl;lrow.appendChild(e);});
+    body.appendChild(lrow);
+    const grid=document.createElement('div');grid.className='days';
+    const offset=(new Date(2026,m,1).getDay()+6)%7;
+    for(let i=0;i<offset;i++){const e=document.createElement('div');e.className='dc emp';grid.appendChild(e);}
+    for(let d=1;d<=dim;d++){
+      const k=key(2026,m,d);
+      const dt=new Date(2026,m,d);
+      const isT=dt.getTime()===TODAY.getTime();
+      const st=stateOf(k);
+      const cell=document.createElement('div');
+      let cls='dc';
+      if(m===2&&d<15)cls+=' dis';
+      else if(isT)cls+=' td';
+      else if(st==='done')cls+=' dn';
+      else if(st==='partial')cls+=' pt';
+      cell.className=cls;
+      const num=document.createElement('div');num.className='dn-';num.textContent=d;cell.appendChild(num);
+      const dots=document.createElement('div');dots.className='dotrow';
+      const checked=data[k]||[];
+      for(let t=0;t<Math.min(N,7);t++){const dot=document.createElement('div');dot.className='dot'+(checked[t]?' on':'');dots.appendChild(dot);}
+      cell.appendChild(dots);
+      if(!(m===2&&d<15))cell.onclick=()=>openModal(k);
+      grid.appendChild(cell);
+    }
+    body.appendChild(grid);sec.appendChild(body);cal.appendChild(sec);
+  }
 }
 
-function showToast(msg){
-  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2000);
+function updateStats(){
+  let total=0,done=0,partial=0;
+  for(let m=2;m<=11;m++){const dim=new Date(2026,m+1,0).getDate();for(let d=1;d<=dim;d++){if(m===2&&d<15)continue;total++;const s=stateOf(key(2026,m,d));if(s==='done')done++;else if(s==='partial')partial++;}}
+  const pct=total?Math.round((done+partial*.5)/total*100):0;
+  document.getElementById('s-total').textContent=total;
+  document.getElementById('s-done').textContent=done;
+  document.getElementById('s-partial').textContent=partial;
+  document.getElementById('s-pct').textContent=pct+'%';
 }
 
-// Header date
-const days=['Ням','Даваа','Мягмар','Лхагва','Пүрэв','Баасан','Бямба'];
-const months=['1-р','2-р','3-р','4-р','5-р','6-р','7-р','8-р','9-р','10-р','11-р','12-р'];
-const now=new Date();
-document.getElementById('hdr-date').textContent=`${now.getFullYear()} · ${months[now.getMonth()]} сарын ${now.getDate()} · ${days[now.getDay()]}`;
+let chartInst=null;
+function renderChart(){
+  const labels=[],vals=[],colors=[];
+  for(let m=2;m<=11;m++){
+    const dim=new Date(2026,m+1,0).getDate();
+    let total=0,done=0,partial=0;
+    for(let d=1;d<=dim;d++){if(m===2&&d<15)continue;total++;const s=stateOf(key(2026,m,d));if(s==='done')done++;else if(s==='partial')partial++;}
+    const pct=total?Math.round((done+partial*.5)/total*100):0;
+    labels.push(MONTHS_MN[m]);vals.push(pct);
+    colors.push(pct>=80?'#0f7b6c':pct>=40?'#d9730d':'#c7c7c5');
+  }
+  if(chartInst)chartInst.destroy();
+  chartInst=new Chart(document.getElementById('progressChart'),{
+    type:'bar',
+    data:{labels,datasets:[{data:vals,backgroundColor:colors,borderRadius:5,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+'%'}}},scales:{x:{grid:{display:false},ticks:{color:'#9b9a97',font:{size:11}}},y:{min:0,max:100,ticks:{color:'#9b9a97',font:{size:11},callback:v=>v+'%'},grid:{color:'rgba(0,0,0,0.05)'}}}}
+  });
+}
 
-renderDaily();
-document.getElementById('ov').addEventListener('click',function(e){if(e.target===this)closeModal();});
+// Monthly experiences
+const expMonths=['3-р сар','4-р сар','5-р сар','6-р сар','7-р сар','8-р сар','9-р сар','10-р сар','11-р сар','12-р сар'];
+const expGrid=document.getElementById('monthly-exp');
+expMonths.forEach((mn,i)=>{
+  const card=document.createElement('div');card.className='col-card';
+  card.innerHTML=`<div class="col-card-title">${mn}</div>
+    <div style="font-size:13px;color:#9b9a97;font-style:italic">Шинэ туршлага #${i+1}</div>`;
+  expGrid.appendChild(card);
+});
 
+// Init
+updateStats();
 </script>
 </body>
 </html>
